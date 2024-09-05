@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}哦,我的堡杯{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">
+
+    <style>
+        /* 渐入效果 */
+        @keyframes fadeInPage {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* 设置 body 初始样式并应用动画 */
+        body {
+            opacity: 0;
+            animation: fadeInPage 1.5s ease-in forwards;
+        }
+
+        /* 隐藏聊天挂件，初始设置为居中小窗口 */
+        #chat-widget {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            z-index: 999;
+            overflow: hidden;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            animation: expandToFullscreen 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, fadeIn 0.8s ease-in forwards;
+        }
+
+        /* 弹窗逐步扩大到全屏效果 */
+        @keyframes expandToFullscreen {
+            0% {
+                width: 200px;
+                height: 200px;
+                border-radius: 15px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            100% {
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                transform: translate(0, 0) scale(1);
+                border-radius: 0;
+                opacity: 1;
+            }
+        }
+
+        /* 从上到下的滑动效果 */
+        @keyframes slideDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 渐变显示效果 */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* 弹窗逐步扩大到全屏效果 */
+        #popup-widget {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow: hidden;
+            transform: translateY(-100%);
+            opacity: 0;
+            animation: slideDown 0.8s ease-out forwards, fadeIn 0.8s ease-in forwards;
+        }
+
+        /* 调整关闭按钮位置到弹窗右上角六分之一的位置，并设置为黑色 */
+        .close-btn {
+            position: absolute;
+            top: 0%;
+            right: 1%;
+            background-color: transparent;
+            border: none;
+        }
+
+        .close-btn a {
+            text-decoration: none;
+            color: black; /* 设置关闭按钮为黑色 */
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .sub-title {
+            cursor: pointer; /* 让小鹿看起来像一个可点击的链接 */
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1 class="text-center display-4">
+            <!-- 点击标题触发聊天挂件显示 -->
+            <a href="#" class="text-success" onclick="toggleChatWidget()"><strong>哦,我的堡杯</strong></a>
+            <!-- 点击小鹿触发弹窗显示 -->
+            <small class="text-muted sub-title" onclick="togglePopupWidget()">小鹿</small>
+        </h1>
+    </header>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+    <footer class="text-center">
+        {% block footer %}
+            <small> &copy; 2003 <a href="luping.love" title="Written by Grey Li">1</a> /
+                <a href="luping.love" title="Fork me on GitHub">1</a> /
+                <a href="luping.love" title="A HelloFlask project">1</a>/
+                <a href="luping.love" title="Powersee">4</a>
+            </small>
+            <p><a id="bottom" href="#" title="Go Top">返回顶部 &uarr;</a></p>
+        {% endblock %}
+    </footer>
+
+    <!-- 聊天挂件 -->
+    <div id="chat-widget">
+        <button class="close-btn">
+            <a href="#" onclick="toggleChatWidget()">X</a>
+        </button>
+        <iframe src="https://cc.luping.love/" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+
+    <!-- 弹窗挂件 -->
+    <div id="popup-widget">
+        <button class="close-btn">
+            <a href="#" onclick="togglePopupWidget()">X</a>
+        </button>
+        <iframe src="https://c.luping.love/" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+
+</main>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+{{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
+
+<script>
+    // 切换聊天挂件的显示和隐藏
+    function toggleChatWidget() {
+        var widget = document.getElementById('chat-widget');
+        widget.style.display = (widget.style.display === 'none' || widget.style.display === '') ? 'block' : 'none';
+    }
+
+    // 切换弹窗挂件的显示和隐藏
+    function togglePopupWidget() {
+        var widget = document.getElementById('popup-widget');
+        widget.style.display = (widget.style.display === 'none' || widget.style.display === '') ? 'block' : 'none';
+    }
+</script>
+</body>
+</html>
